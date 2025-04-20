@@ -1,20 +1,18 @@
-# Use uma imagem base do Python
-FROM python:3.9-slim
+# app/Dockerfile
 
-# Define o diretório de trabalho dentro do container
-# WORKDIR /app
+FROM python:3.10
 
-# Copia os arquivos de requisitos para o container
-COPY requirements.txt .
+# Define diretório de trabalho no container
+WORKDIR /app
 
-# Instala as dependências do projeto
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copia o restante do código da aplicação para o container
+# Copia os arquivos da pasta app para o container
 COPY . .
 
-# Expõe a porta que a API usará
+# Instala as dependências
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expõe a porta do Flask
 EXPOSE 5000
 
-# Define o comando para iniciar a aplicação
+# Comando para iniciar o app com o servidor Flask
 CMD ["python", "crudAlunos.py"]

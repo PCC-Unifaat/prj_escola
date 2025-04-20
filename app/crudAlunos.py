@@ -8,13 +8,17 @@ app = Flask(__name__)
 def listar_alunos():
     conn = bd.create_connection()
     if conn is None:
-        return jsonify({"error": "Failed to connect to the database"}), 500
-    cursor = conn.cursor()
+        return jsonify({"error": "Falha na conexão com o banco de dados"}), 500
+
     try:
+        cursor = conn.cursor()
         cursor.execute("SELECT * FROM Aluno")
         alunos = cursor.fetchall()
-        return jsonify([
-            {
+        cursor.close()
+
+        resultado = []
+        for aluno in alunos:
+            resultado.append({
                 "aluno_id": aluno[0],
                 "nome_completo": aluno[1],
                 "data_nascimento": aluno[2],
@@ -22,34 +26,49 @@ def listar_alunos():
                 "nome_responsavel": aluno[4],
                 "telefone_responsavel": aluno[5],
                 "email_responsavel": aluno[6],
-                "informacoes_adicionais": aluno[7]
-            } for aluno in alunos
-        ]), 200
+                "informacoes_adicionais": aluno[7],
+            })
+
+        return jsonify(resultado), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:
-        cursor.close()
         conn.close()
 
-# Cadastrar novo aluno
+
+# Cadastrar um novo aluno
 @app.route('/alunos', methods=['POST'])
 def cadastrar_aluno():
     data = request.get_json()
     conn = bd.create_connection()
     if conn is None:
-        return jsonify({"error": "Failed to connect to the database"}), 500
-    cursor = conn.cursor()
+        return jsonify({"error": "Falha na conexão com o banco de dados"}), 500
+
     try:
+        cursor = conn.cursor()
         cursor.execute(
             """
-            INSERT INTO Aluno (aluno_id, nome_completo, data_nascimento, id_turma, nome_responsavel, telefone_responsavel, email_responsavel, informacoes_adicionais)
+            INSERT INTO Aluno (
+                aluno_id, nome_completo, data_nascimento, id_turma,
+                nome_responsavel, telefone_responsavel, email_responsavel, informacoes_adicionais
+            )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
-            (data['aluno_id'], data['nome_completo'], data['data_nascimento'], data['id_turma'],
-             data['nome_responsavel'], data['telefone_responsavel'], data['email_responsavel'], data.get('informacoes_adicionais'))
+            (
+                data['aluno_id'],
+                data['nome_completo'],
+                data['data_nascimento'],
+                data['id_turma'],
+                data['nome_responsavel'],
+                data['telefone_responsavel'],
+                data['email_responsavel'],
+                data.get('informacoes_adicionais', '')
+            )
         )
         conn.commit()
         return jsonify({"message": "Aluno cadastrado com sucesso"}), 201
+
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 400
@@ -57,27 +76,43 @@ def cadastrar_aluno():
         cursor.close()
         conn.close()
 
-# Alterar dados de um aluno específico
+
+# Atualizar dados de um aluno existente
 @app.route('/alunos/<string:aluno_id>', methods=['PUT'])
-def alterar_aluno(aluno_id):
+def atualizar_aluno(aluno_id):
     data = request.get_json()
     conn = bd.create_connection()
     if conn is None:
-        return jsonify({"error": "Failed to connect to the database"}), 500
-    cursor = conn.cursor()
+        return jsonify({"error": "Falha na conexão com o banco de dados"}), 500
+
     try:
+        cursor = conn.cursor()
         cursor.execute(
             """
-            UPDATE Aluno
-            SET nome_completo = %s, data_nascimento = %s, id_turma = %s, nome_responsavel = %s, 
-            telefone_responsavel = %s, email_responsavel = %s, informacoes_adicionais = %s
+            UPDATE Aluno SET
+                nome_completo = %s,
+                data_nascimento = %s,
+                id_turma = %s,
+                nome_responsavel = %s,
+                telefone_responsavel = %s,
+                email_responsavel = %s,
+                informacoes_adicionais = %s
             WHERE aluno_id = %s
             """,
-            (data['nome_completo'], data['data_nascimento'], data['id_turma'], data['nome_responsavel'],
-             data['telefone_responsavel'], data['email_responsavel'], data.get('informacoes_adicionais'), aluno_id)
+            (
+                data['nome_completo'],
+                data['data_nascimento'],
+                data['id_turma'],
+                data['nome_responsavel'],
+                data['telefone_responsavel'],
+                data['email_responsavel'],
+                data.get('informacoes_adicionais', ''),
+                aluno_id
+            )
         )
         conn.commit()
-        return jsonify({"message": "Dados do aluno atualizados com sucesso"}), 200
+        return jsonify({"message": "Aluno atualizado com sucesso"}), 200
+
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 400
@@ -85,17 +120,20 @@ def alterar_aluno(aluno_id):
         cursor.close()
         conn.close()
 
-# Excluir um aluno
+
+# Deletar um aluno
 @app.route('/alunos/<string:aluno_id>', methods=['DELETE'])
-def excluir_aluno(aluno_id):
+def deletar_aluno(aluno_id):
     conn = bd.create_connection()
     if conn is None:
-        return jsonify({"error": "Failed to connect to the database"}), 500
-    cursor = conn.cursor()
+        return jsonify({"error": "Falha na conexão com o banco de dados"}), 500
+
     try:
+        cursor = conn.cursor()
         cursor.execute("DELETE FROM Aluno WHERE aluno_id = %s", (aluno_id,))
         conn.commit()
-        return jsonify({"message": "Aluno excluído com sucesso"}), 200
+        return jsonify({"message": "Aluno deletado com sucesso"}), 200
+
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 400
@@ -103,5 +141,7 @@ def excluir_aluno(aluno_id):
         cursor.close()
         conn.close()
 
+
+# Iniciar a aplicação Flask
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

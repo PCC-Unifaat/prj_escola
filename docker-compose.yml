@@ -2,26 +2,28 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: ./app
     container_name: flask_app
     ports:
       - "5000:5000"
     volumes:
-      - .:/app
+      - ./app:/app
     depends_on:
       - db
     networks:
       - app_network
 
   db:
-    build: ./BD
+    build:
+      context: ./BD
     container_name: postgres_db
     environment:
       POSTGRES_USER: faat
       POSTGRES_PASSWORD: faat
       POSTGRES_DB: escola
     ports:
-      - "3000:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
