@@ -2,17 +2,14 @@
 FROM python:3.9-slim
 
 # Definir o diretório de trabalho no container
-WORKDIR /app
+WORKDIR /
 
 # Copiar os arquivos necessários para o container
-COPY app/ /app/
-COPY app/Util/paramsBD.yml /app/Util/paramsBD.yml
+COPY  /app/requirements.txt requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Instalar as dependências                                                                                                                                                      
-RUN pip install --no-cache-dir -r /app/requirements.txt
-
-# Expor a porta que o Flask usará
-EXPOSE 5000
+COPY ./app .
 
 # Comando para iniciar o microserviço
 CMD ["python", "crudAlunos.py"]
