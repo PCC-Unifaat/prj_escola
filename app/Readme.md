@@ -1,89 +1,126 @@
-# CRUD Microservice for Categories
 
-Este microserviço fornece uma API CRUD para a tabela `categories` do banco de dados PostgreSQL. Ele permite criar, ler, atualizar e deletar categorias.
-Este repositório deve ser clonado pelos Alunos da UniFaat para trabalharem os outros aspectos da Aplicação.
+Este microserviço fornece uma API CRUD para a tabela `Aluno` do banco de dados PostgreSQL. Ele permite criar, ler, atualizar e deletar registros de alunos. Este repositório deve ser clonado pelos Alunos da UniFaat para trabalharem os outros aspectos da aplicação.
 
 ## Configuração
 
 1. **Banco de Dados**: Certifique-se de que o banco de dados PostgreSQL está configurado e rodando. 
-<br>O script SQL `northwind.sql` na pasta InfraBD contém a definição da tabela `categories`.<br>
-Para inicializar a infra e o Banco Postgre sega o Readme.md de Infra [clicando aqui](../InfraBD/Readme.md)
+   - O script SQL `escola.sql` na pasta `BD` contém a definição da tabela `Aluno`.
 
 2. **Parâmetros de Conexão**: Configure os parâmetros de conexão ao banco de dados no arquivo `paramsBD.yml` localizado em `app/Util/`.
 
 ```yaml
 # Util/paramsBD.yml
-db_name: "your_db_name"
-db_user: "your_db_user"
-db_password: "your_db_password"
-db_host: "your_db_host"
-db_port: "your_db_port"
+db_name: "escola"
+db_user: "faat"
+db_password: "faat"
+db_host: "localhost"
+db_port: "5432"
 ```
-<br>
 
 ## Execução
-**Instalar Dependências:** 
-Certifique-se de que você tem o Flask e psycopg2 instalados. Você pode instalar as dependências usando pip:
+
+### Instalar Dependências
+Certifique-se de que você tem o Flask, Flasgger e psycopg2 instalados. Você pode instalar as dependências usando o comando:
 ```sh
 pip install -r requirements.txt
 ```
 
-**Rodar o Microserviço:** 
+### Rodar o Microserviço
 Navegue até o diretório raiz do projeto e execute o seguinte comando para iniciar o servidor Flask:
 ```sh
-export FLASK_APP=Sistema.crudCateg
+export FLASK_APP=crudAlunos
 flask run --host=0.0.0.0 --port=5000
 ```
-Endpoints
-Criar Categoria
-- URL: /categories
-- Método: POST
-- Corpo da Requisição:
-```json
-{
-    "category_id": [Código da Categoria],
-    "category_name": "[Nome da Categoria]",
-    "description": "[Descrição da categoria]",
-    "picture": [imagem]
-}
-```
-### Ler Categoria
 
-- **URL**: `/categories/<int:category_id>`
+No Windows, use:
+```sh
+set FLASK_APP=crudAlunos
+flask run --host=0.0.0.0 --port=5000
+```
+
+## Endpoints
+
+### Listar Alunos
+- **URL**: `/alunos`
 - **Método**: `GET`
+- **Descrição**: Retorna uma lista de todos os alunos cadastrados.
 - **Exemplo de `curl`**:
   ```sh
-  curl -X GET http://localhost:5000/categories/1
+  curl -X GET http://localhost:5000/alunos
   ```
 
-### Atualizar Categoria
-
-- **URL**: `/categories/<int:category_id>`
-- **Método**: `PUT`
+### Cadastrar Aluno
+- **URL**: `/alunos`
+- **Método**: `POST`
 - **Corpo da Requisição**:
   ```json
   {
-      "category_name": "Beverages",
-      "description": "Soft drinks, coffees, teas, beers, and ales",
-      "picture": null
+      "aluno_id": "123",
+      "nome_completo": "João Silva",
+      "data_nascimento": "2000-01-01",
+      "id_turma": "1",
+      "nome_responsavel": "Maria Silva",
+      "telefone_responsavel": "123456789",
+      "email_responsavel": "maria@example.com",
+      "informacoes_adicionais": "Nenhuma"
   }
   ```
 - **Exemplo de `curl`**:
   ```sh
-  curl -X PUT http://localhost:5000/categories/1 \
+  curl -X POST http://localhost:5000/alunos \
   -H "Content-Type: application/json" \
   -d '{
-      "category_name": "Beverages",
-      "description": "Soft drinks, coffees, teas, beers, and ales",
-      "picture": null
+      "aluno_id": "123",
+      "nome_completo": "João Silva",
+      "data_nascimento": "2000-01-01",
+      "id_turma": "1",
+      "nome_responsavel": "Maria Silva",
+      "telefone_responsavel": "123456789",
+      "email_responsavel": "maria@example.com",
+      "informacoes_adicionais": "Nenhuma"
   }'
   ```
 
-### Deletar Categoria
+### Atualizar Aluno
+- **URL**: `/alunos/<string:aluno_id>`
+- **Método**: `PUT`
+- **Corpo da Requisição**:
+  ```json
+  {
+      "nome_completo": "João Silva Atualizado",
+      "data_nascimento": "2000-01-01",
+      "id_turma": "1",
+      "nome_responsavel": "Maria Silva",
+      "telefone_responsavel": "987654321",
+      "email_responsavel": "maria@example.com",
+      "informacoes_adicionais": "Atualizado"
+  }
+  ```
+- **Exemplo de `curl`**:
+  ```sh
+  curl -X PUT http://localhost:5000/alunos/123 \
+  -H "Content-Type: application/json" \
+  -d '{
+      "nome_completo": "João Silva Atualizado",
+      "data_nascimento": "2000-01-01",
+      "id_turma": "1",
+      "nome_responsavel": "Maria Silva",
+      "telefone_responsavel": "987654321",
+      "email_responsavel": "maria@example.com",
+      "informacoes_adicionais": "Atualizado"
+  }'
+  ```
 
-- **URL**: `/categories/<int:category_id>`
+### Deletar Aluno
+- **URL**: `/alunos/<string:aluno_id>`
 - **Método**: `DELETE`
 - **Exemplo de `curl`**:
   ```sh
-  curl -X DELETE http://localhost:5000/categories/1
+  curl -X DELETE http://localhost:5000/alunos/123
   ```
+
+## Testes
+Para rodar os testes automatizados com `pytest`, execute:
+```sh
+pytest
+```

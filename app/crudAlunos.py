@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
+from flasgger import Swagger
 import Util.bd as bd
 
 app = Flask(__name__)
+
+# Configuração do Swagger
+swagger = Swagger(app)
 
 # Listar todos os alunos
 @app.route('/alunos', methods=['GET'])
