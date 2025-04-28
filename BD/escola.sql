@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS escola;
 USE escola;
 
 -- Tabela Aluno
-CREATE TABLE Aluno (
+CREATE TABLE IF NOT EXISTS Aluno (
     id_aluno INT AUTO_INCREMENT PRIMARY KEY,
     nome_completo VARCHAR(255) NOT NULL,
     data_nascimento DATE NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE Aluno (
 );
 
 -- Tabela Turma
-CREATE TABLE Turma (
+CREATE TABLE IF NOT EXISTS Turma (
     id_turma INT AUTO_INCREMENT PRIMARY KEY,
     nome_turma VARCHAR(50) NOT NULL,
     id_professor INT,
@@ -25,7 +25,7 @@ CREATE TABLE Turma (
 );
 
 -- Tabela Professor
-CREATE TABLE Professor (
+CREATE TABLE IF NOT EXISTS Professor (
     id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome_completo VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE Professor (
 );
 
 -- Tabela Pagamento
-CREATE TABLE Pagamento (
+CREATE TABLE IF NOT EXISTS Pagamento (
     id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
     id_aluno INT NOT NULL,
     data_pagamento DATE NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE Pagamento (
 );
 
 -- Tabela Presenca
-CREATE TABLE Presenca (
+CREATE TABLE IF NOT EXISTS Presenca (
     id_presenca INT AUTO_INCREMENT PRIMARY KEY,
     id_aluno INT NOT NULL,
     data_presenca DATE NOT NULL,
@@ -54,14 +54,14 @@ CREATE TABLE Presenca (
 );
 
 -- Tabela Atividade
-CREATE TABLE Atividade (
+CREATE TABLE IF NOT EXISTS Atividade (
     id_atividade INT AUTO_INCREMENT PRIMARY KEY,
     descricao TEXT NOT NULL,
     data_realizacao DATE NOT NULL
 );
 
 -- Tabela de Ligação Atividade_Aluno
-CREATE TABLE Atividade_Aluno (
+CREATE TABLE IF NOT EXISTS Atividade_Aluno (
     id_atividade INT NOT NULL,
     id_aluno INT NOT NULL,
     PRIMARY KEY (id_atividade, id_aluno),
@@ -70,7 +70,7 @@ CREATE TABLE Atividade_Aluno (
 );
 
 -- Tabela Usuario
-CREATE TABLE Usuario (
+CREATE TABLE IF NOT EXISTS Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,

@@ -7,6 +7,31 @@ app = Flask(__name__)
 # Configuração do Swagger
 swagger = Swagger(app)
 
+#Debug slq
+@app.route('/tabelas', methods=['GET'])
+def listar_tabelas():
+    conn = bd.create_connection()
+    if conn is None:
+        return jsonify({"error": "Falha na conexão com o banco de dados"}), 500
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+        """)
+        tabelas = cursor.fetchall()
+        cursor.close()
+
+        resultado = [tabela[0] for tabela in tabelas]
+        return jsonify(resultado), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        conn.close()
+
 # Listar todos os alunos
 @app.route('/alunos', methods=['GET'])
 def listar_alunos():
