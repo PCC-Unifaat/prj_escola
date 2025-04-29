@@ -1,6 +1,6 @@
 -- Criação do banco de dados
-CREATE DATABASE IF NOT EXISTS escola;
-USE escola;
+--CREATE DATABASE IF NOT EXISTS escola;
+--USE escola;
 
 -- Tabela Aluno
 CREATE TABLE IF NOT EXISTS Aluno (
