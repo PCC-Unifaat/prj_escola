@@ -2,79 +2,79 @@
 --CREATE DATABASE IF NOT EXISTS escola;
 --USE escola;
 
--- Tabela Aluno
-CREATE TABLE IF NOT EXISTS Aluno (
-    id_aluno INT AUTO_INCREMENT PRIMARY KEY,
-    nome_completo VARCHAR(255) NOT NULL,
-    data_nascimento DATE NOT NULL,
-    id_turma INT,
-    nome_responsavel VARCHAR(255) NOT NULL,
-    telefone_responsavel VARCHAR(20) NOT NULL,
-    email_responsavel VARCHAR(100) NOT NULL,
-    informacoes_adicionais TEXT,
-    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma)
-);
-
--- Tabela Turma
-CREATE TABLE IF NOT EXISTS Turma (
-    id_turma INT AUTO_INCREMENT PRIMARY KEY,
-    nome_turma VARCHAR(50) NOT NULL,
-    id_professor INT,
-    horario VARCHAR(100),
-    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor)
-);
-
--- Tabela Professor
-CREATE TABLE IF NOT EXISTS Professor (
-    id_professor INT AUTO_INCREMENT PRIMARY KEY,
-    nome_completo VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL,
+-- Tabela professor
+CREATE TABLE IF NOT EXISTS professor (
+    id_professor SERIAL PRIMARY KEY,
+    nome_completo VARCHAR(255),
+    email VARCHAR(100),
     telefone VARCHAR(20)
 );
 
--- Tabela Pagamento
-CREATE TABLE IF NOT EXISTS Pagamento (
-    id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
-    id_aluno INT NOT NULL,
-    data_pagamento DATE NOT NULL,
-    valor_pago DECIMAL(10, 2) NOT NULL,
-    forma_pagamento VARCHAR(50) NOT NULL,
-    referencia VARCHAR(100),
-    status VARCHAR(20) NOT NULL,
-    FOREIGN KEY (id_aluno) REFERENCES Aluno(id_aluno)
-);
-
--- Tabela Presenca
-CREATE TABLE IF NOT EXISTS Presenca (
-    id_presenca INT AUTO_INCREMENT PRIMARY KEY,
-    id_aluno INT NOT NULL,
-    data_presenca DATE NOT NULL,
-    presente BOOLEAN NOT NULL,
-    FOREIGN KEY (id_aluno) REFERENCES Aluno(id_aluno)
-);
-
--- Tabela Atividade
-CREATE TABLE IF NOT EXISTS Atividade (
-    id_atividade INT AUTO_INCREMENT PRIMARY KEY,
-    descricao TEXT NOT NULL,
-    data_realizacao DATE NOT NULL
-);
-
--- Tabela de Ligação Atividade_Aluno
-CREATE TABLE IF NOT EXISTS Atividade_Aluno (
-    id_atividade INT NOT NULL,
-    id_aluno INT NOT NULL,
-    PRIMARY KEY (id_atividade, id_aluno),
-    FOREIGN KEY (id_atividade) REFERENCES Atividade(id_atividade),
-    FOREIGN KEY (id_aluno) REFERENCES Aluno(id_aluno)
-);
-
--- Tabela Usuario
-CREATE TABLE IF NOT EXISTS Usuario (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    login VARCHAR(50) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL,
-    nivel_acesso VARCHAR(20) NOT NULL,
+-- Tabela turma
+CREATE TABLE IF NOT EXISTS turma (
+    id_turma SERIAL PRIMARY KEY,
+    nome_turma VARCHAR(50),
     id_professor INT,
-    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor)
+    horario VARCHAR(100),
+    FOREIGN KEY (id_professor) REFERENCES professor(id_professor)
+);
+
+-- Tabela aluno
+CREATE TABLE IF NOT EXISTS aluno (
+    id_aluno SERIAL PRIMARY KEY,
+    nome_completo VARCHAR(255),
+    data_nascimento DATE,
+    id_turma INT,
+    nome_responsavel VARCHAR(255),
+    telefone_responsavel VARCHAR(20),
+    email_responsavel VARCHAR(100),
+    informacoes_adicionais TEXT,
+    FOREIGN KEY (id_turma) REFERENCES turma(id_turma)
+);
+
+-- Tabela pagamento
+CREATE TABLE IF NOT EXISTS pagamento (
+    id_pagamento SERIAL PRIMARY KEY,
+    id_aluno INT,
+    data_pagamento DATE,
+    valor_pago DECIMAL(10, 2),
+    forma_pagamento VARCHAR(50),
+    referencia VARCHAR(100),
+    status VARCHAR(20),
+    FOREIGN KEY (id_aluno) REFERENCES aluno(id_aluno)
+);
+
+-- Tabela presenca
+CREATE TABLE IF NOT EXISTS presenca (
+    id_presenca SERIAL PRIMARY KEY,
+    id_aluno INT,
+    data_presenca DATE,
+    presente BOOLEAN,
+    FOREIGN KEY (id_aluno) REFERENCES aluno(id_aluno)
+);
+
+-- Tabela atividade
+CREATE TABLE IF NOT EXISTS atividade (
+    id_atividade SERIAL PRIMARY KEY,
+    descricao TEXT,
+    data_realizacao DATE
+);
+
+-- Tabela de ligação atividade_aluno
+CREATE TABLE IF NOT EXISTS atividade_aluno (
+    id_atividade INT,
+    id_aluno INT,
+    PRIMARY KEY (id_atividade, id_aluno),
+    FOREIGN KEY (id_atividade) REFERENCES atividade(id_atividade),
+    FOREIGN KEY (id_aluno) REFERENCES aluno(id_aluno)
+);
+
+-- Tabela usuario
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    login VARCHAR(50) UNIQUE,
+    senha VARCHAR(255),
+    nivel_acesso VARCHAR(20),
+    id_professor INT,
+    FOREIGN KEY (id_professor) REFERENCES professor(id_professor)
 );
