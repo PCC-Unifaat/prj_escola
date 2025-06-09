@@ -29,6 +29,19 @@ swagger = Swagger(app)
 #Debug slq
 @app.route('/tabelas', methods=['GET'])
 def listar_tabelas():
+    """
+    Listar todas as tabelas do banco de dados
+    ---
+    responses:
+        200:
+            description: Lista de tabelas obtida com sucesso
+            schema:
+                type: array
+                items:
+                    type: string
+        500:
+            description: Falha na conexão com o banco de dados
+    """
     conn = bd.create_connection()
     if conn is None:
         logger.error("Falha na conexão com o banco de dados")
@@ -57,6 +70,40 @@ def listar_tabelas():
 # Listar todos os alunos
 @app.route('/alunos', methods=['GET'])
 def listar_alunos():
+    """
+    Listar todos os alunos
+    Retorna uma lista de todos os alunos cadastrados.
+    ---
+    responses:
+        200:
+            description: Lista de alunos obtida com sucesso
+            schema:
+                type: array
+                items:
+                    type: object
+                    properties:
+                        aluno_id:
+                            type: string
+                        nome_completo:
+                            type: string
+                        data_nascimento:
+                            type: string
+                            format: date
+                        id_turma:
+                            type: integer
+                        nome_responsavel:
+                            type: string
+                        telefone_responsavel:
+                            type: string
+                        email_responsavel:
+                            type: string
+                        informacoes_adicionais:
+                            type: string
+        500:
+            description: Falha na conexão com o banco de dados
+        400:
+            description: Erro ao listar alunos
+    """
     conn = bd.create_connection()
     if conn is None:
         logger.error("Falha na conexão com o banco de dados")
@@ -92,6 +139,57 @@ def listar_alunos():
 # Cadastrar um novo aluno
 @app.route('/alunos', methods=['POST'])
 def cadastrar_aluno():
+    """
+    Cadastrar um novo aluno
+    Permite cadastrar um novo aluno no sistema.
+    ---
+    parameters:
+        - in: body
+          name: aluno
+          schema:
+              type: object
+              required:
+                  - aluno_id
+                  - nome_completo
+                  - data_nascimento
+                  - id_turma
+                  - nome_responsavel
+                  - telefone_responsavel
+                  - email_responsavel
+              properties:
+                  aluno_id:
+                      type: string
+                      description: Identificador único do aluno
+                  nome_completo:
+                      type: string
+                      description: Nome completo do aluno
+                  data_nascimento:
+                      type: string
+                      format: date
+                      description: Data de nascimento do aluno (YYYY-MM-DD)
+                  id_turma:
+                      type: integer
+                      description: ID da turma do aluno
+                  nome_responsavel:
+                      type: string
+                      description: Nome do responsável
+                  telefone_responsavel:
+                      type: string
+                      description: Telefone do responsável
+                  email_responsavel:
+                      type: string
+                      description: E-mail do responsável
+                  informacoes_adicionais:
+                      type: string
+                      description: Informações adicionais sobre o aluno (opcional)
+    responses:
+        201:
+            description: Aluno cadastrado com sucesso
+        400:
+            description: Dados inválidos ou erro ao cadastrar aluno
+        500:
+            description: Falha na conexão com o banco de dados
+    """
     data = request.get_json()
     conn = bd.create_connection()
     if conn is None:
@@ -134,6 +232,58 @@ def cadastrar_aluno():
 # Atualizar dados de um aluno existente
 @app.route('/alunos/<string:aluno_id>', methods=['PUT'])
 def atualizar_aluno(aluno_id):
+    """
+    Atualizar dados de um aluno existente
+    Permite atualizar as informações de um aluno específico.
+    ---
+    parameters:
+        - in: path
+          name: aluno_id
+          type: string
+          required: true
+          description: ID do aluno a ser atualizado
+        - in: body
+          name: aluno
+          schema:
+              type: object
+              required:
+                  - nome_completo
+                  - data_nascimento
+                  - id_turma
+                  - nome_responsavel
+                  - telefone_responsavel
+                  - email_responsavel
+              properties:
+                  nome_completo:
+                      type: string
+                      description: Novo nome completo do aluno
+                  data_nascimento:
+                      type: string
+                      format: date
+                      description: Nova data de nascimento do aluno (YYYY-MM-DD)
+                  id_turma:
+                      type: integer
+                      description: Novo ID da turma do aluno
+                  nome_responsavel:
+                      type: string
+                      description: Novo nome do responsável
+                  telefone_responsavel:
+                      type: string
+                      description: Novo telefone do responsável
+                  email_responsavel:
+                      type: string
+                      description: Novo e-mail do responsável
+                  informacoes_adicionais:
+                      type: string
+                      description: Novas informações adicionais sobre o aluno (opcional)
+    responses:
+        200:
+            description: Aluno atualizado com sucesso
+        400:
+            description: Dados inválidos ou erro ao atualizar aluno
+        500:
+            description: Falha na conexão com o banco de dados
+    """
     data = request.get_json()
     conn = bd.create_connection()
     if conn is None:
@@ -180,6 +330,24 @@ def atualizar_aluno(aluno_id):
 # Deletar um aluno
 @app.route('/alunos/<string:aluno_id>', methods=['DELETE'])
 def deletar_aluno(aluno_id):
+    """
+    Deletar um aluno
+    Remove um aluno específico do sistema.
+    ---
+    parameters:
+        - in: path
+          name: aluno_id
+          type: string
+          required: true
+          description: ID do aluno a ser deletado
+    responses:
+        200:
+            description: Aluno deletado com sucesso
+        400:
+            description: Erro ao deletar aluno
+        500:
+            description: Falha na conexão com o banco de dados
+    """
     conn = bd.create_connection()
     if conn is None:
         logger.error("Falha na conexão com o banco de dados")
