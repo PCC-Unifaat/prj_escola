@@ -1,6 +1,5 @@
+-- Script para criação do banco de dados e tabelas para o sistema de gestão escolar
 -- Criação do banco de dados
---CREATE DATABASE IF NOT EXISTS escola;
---USE escola;
 
 -- Tabela professor
 CREATE TABLE IF NOT EXISTS professor (
@@ -78,3 +77,21 @@ CREATE TABLE IF NOT EXISTS usuario (
     id_professor INT,
     FOREIGN KEY (id_professor) REFERENCES professor(id_professor)
 );
+
+-- Inserção de dados de exemplo
+
+-- Inserir dados na tabela professor
+INSERT INTO professor (nome_completo, email, telefone) VALUES
+('Ana Paula Santos', 'ana.santos@escola.com', '99123-4567'),
+('Carlos Alberto Lima', 'carlos.lima@escola.com', '99876-5432');
+
+-- Inserir dados na tabela turma (assumindo que id_professor 1 e 2 já existem)
+INSERT INTO turma (nome_turma, id_professor, horario) VALUES
+('Maternal I A', 1, 'Manhã'),
+('Jardim II B', 2, 'Tarde');
+
+-- Inserir dados na tabela aluno (assumindo que id_turma 1 e 2 já existem)
+INSERT INTO aluno (nome_completo, data_nascimento, id_turma, nome_responsavel, telefone_responsavel, email_responsavel, informacoes_adicionais) VALUES
+('Sofia Oliveira', '2020-03-15', 1, 'Mariana Oliveira', '99111-2222', 'mariana.o@example.com', 'Alergia a amendoim'),
+('Pedro Souza', '2019-11-20', 2, 'Fernando Souza', '99333-4444', 'fernando.s@example.com', 'Nenhuma'),
+('Isabela Costa', '2021-01-10', 1, 'Carla Costa', '99555-6666', 'carla.c@example.com', NULL);

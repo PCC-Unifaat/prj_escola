@@ -23,7 +23,36 @@ console_handler.setFormatter(console_format)
 logger.addHandler(console_handler)
 
 app = Flask(__name__)
-# Configuração do Swagger
+
+# Configuração do Swagger com melhorias
+app.config['SWAGGER'] = {
+    'title': 'API de Gerenciamento de Alunos da Escola',
+    'uiversion': 3,
+    'description': 'Esta API oferece operações CRUD para a gestão de alunos em um sistema escolar. Permite listar, cadastrar, atualizar e deletar informações de alunos.',
+    'termsOfService': 'http://your-terms-of-service-url.com',
+    'contact': {
+        'name': 'Suporte da API',
+        'url': 'http://your-support-url.com',
+        'email': 'support@example.com'
+    },
+    'license': {
+        'name': 'Apache 2.0',
+        'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    },
+    'version': '1.0.0',
+    'servers': [
+        {'url': 'http://localhost:5000', 'description': 'Servidor de Desenvolvimento Local'}
+    ],
+    'specs': [
+        {
+            'endpoint': 'apispec_1',
+            'route': '/apispec_1.json',
+            'rule_filter': lambda rule: True,  # all in
+            'model_filter': lambda tag: True,  # all in
+        }
+    ]
+}
+
 swagger = Swagger(app)
 
 #Debug slq
@@ -32,6 +61,8 @@ def listar_tabelas():
     """
     Listar todas as tabelas do banco de dados
     ---
+    tags:
+      - Debug
     responses:
         200:
             description: Lista de tabelas obtida com sucesso
@@ -74,6 +105,8 @@ def listar_alunos():
     Listar todos os alunos
     Retorna uma lista de todos os alunos cadastrados.
     ---
+    tags:
+      - Alunos
     responses:
         200:
             description: Lista de alunos obtida com sucesso
@@ -143,6 +176,8 @@ def cadastrar_aluno():
     Cadastrar um novo aluno
     Permite cadastrar um novo aluno no sistema.
     ---
+    tags:
+      - Alunos
     parameters:
         - in: body
           name: aluno
@@ -236,6 +271,8 @@ def atualizar_aluno(aluno_id):
     Atualizar dados de um aluno existente
     Permite atualizar as informações de um aluno específico.
     ---
+    tags:
+      - Alunos
     parameters:
         - in: path
           name: aluno_id
@@ -334,6 +371,8 @@ def deletar_aluno(aluno_id):
     Deletar um aluno
     Remove um aluno específico do sistema.
     ---
+    tags:
+      - Alunos
     parameters:
         - in: path
           name: aluno_id
