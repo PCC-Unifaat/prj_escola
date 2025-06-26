@@ -55,49 +55,6 @@ app.config['SWAGGER'] = {
 
 swagger = Swagger(app)
 
-
-@app.route('/tabelas', methods=['GET'])
-def listar_tabelas():
-    """
-    Listar todas as tabelas do banco de dados
-    ---
-    tags:
-      - Debug
-    responses:
-        200:
-            description: Lista de tabelas obtida com sucesso
-            schema:
-                type: array
-                items:
-                    type: string
-        500:
-            description: Falha na conexão com o banco de dados
-    """
-    conn = bd.create_connection()
-    if conn is None:
-        logger.error("Falha na conexão com o banco de dados")
-        return jsonify({"error": "Falha na conexão com o banco de dados"}), 500
-
-    try:
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT table_name
-            FROM information_schema.tables
-            WHERE table_schema = 'public'
-        """)
-        tabelas = cursor.fetchall()
-        cursor.close()
-
-        resultado = [tabela[0] for tabela in tabelas]
-        logger.info("Operação GET concluída com sucesso")
-        return jsonify(resultado), 200
-
-    except Exception as e:
-        logger.error("Erro ao processar solicitação: %s", str(e))
-        return jsonify({"error": str(e)}), 400
-    finally:
-        conn.close()
-
 # Listar todos os alunos
 @app.route('/alunos', methods=['GET'])
 def listar_alunos():
@@ -222,42 +179,42 @@ def cadastrar_aluno():
     ---
     tags:
       - Alunos
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - nome_completo
-              - data_nascimento
-              - id_turma
-              - nome_responsavel
-              - telefone_responsavel
-              - email_responsavel
-            properties:
-              nome_completo:
-                type: string
-                description: Nome completo do aluno
-              data_nascimento:
-                type: string
-                format: date
-                description: Data de nascimento do aluno (YYYY-MM-DD)
-              id_turma:
-                type: integer
-                description: ID da turma do aluno
-              nome_responsavel:
-                type: string
-                description: Nome do responsável
-              telefone_responsavel:
-                type: string
-                description: Telefone do responsável
-              email_responsavel:
-                type: string
-                description: E-mail do responsável
-              informacoes_adicionais:
-                type: string
-                description: Informações adicionais sobre o aluno (opcional)
+    parameters:
+      - in: body
+        name: aluno
+        required: true
+        schema:
+          type: object
+          required:
+            - nome_completo
+            - data_nascimento
+            - id_turma
+            - nome_responsavel
+            - telefone_responsavel
+            - email_responsavel
+          properties:
+            nome_completo:
+              type: string
+              description: Nome completo do aluno
+            data_nascimento:
+              type: string
+              format: date
+              description: Data de nascimento do aluno (YYYY-MM-DD)
+            id_turma:
+              type: integer
+              description: ID da turma do aluno
+            nome_responsavel:
+              type: string
+              description: Nome do responsável pelo aluno
+            telefone_responsavel:
+              type: string
+              description: Telefone do responsável
+            email_responsavel:
+              type: string
+              description: E-mail do responsável
+            informacoes_adicionais:
+              type: string
+              description: Informações adicionais sobre o aluno (opcional)
     responses:
         201:
             description: Aluno cadastrado com sucesso
