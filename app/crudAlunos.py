@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template_string
 from flasgger import Swagger
 import Util.bd as bd
 import logging
@@ -55,7 +55,7 @@ app.config['SWAGGER'] = {
 
 swagger = Swagger(app)
 
-#Debug slq
+
 @app.route('/tabelas', methods=['GET'])
 def listar_tabelas():
     """
@@ -161,6 +161,50 @@ def listar_alunos():
                 "informacoes_adicionais": aluno[7],
             })
         logger.info("Listagem de alunos realizada com sucesso: %s", resultado)
+
+        # Verifica se o usuário quer HTML
+        if "text/html" in request.headers.get("Accept", ""):
+            html = """
+            <html>
+            <head>
+                <title>Lista de Alunos</title>
+                <style>
+                    table {border-collapse: collapse; width: 100%;}
+                    th, td {border: 1px solid #ddd; padding: 8px;}
+                    th {background-color: #f2f2f2;}
+                </style>
+            </head>
+            <body>
+                <h2>Lista de Alunos</h2>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome Completo</th>
+                        <th>Data Nascimento</th>
+                        <th>ID Turma</th>
+                        <th>Responsável</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th>Informações</th>
+                    </tr>
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td>{{ aluno.aluno_id }}</td>
+                        <td>{{ aluno.nome_completo }}</td>
+                        <td>{{ aluno.data_nascimento }}</td>
+                        <td>{{ aluno.id_turma }}</td>
+                        <td>{{ aluno.nome_responsavel }}</td>
+                        <td>{{ aluno.telefone_responsavel }}</td>
+                        <td>{{ aluno.email_responsavel }}</td>
+                        <td>{{ aluno.informacoes_adicionais }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </body>
+            </html>
+            """
+            return render_template_string(html, alunos=resultado)
+
         return jsonify(resultado), 200
 
     except Exception as e:
@@ -178,45 +222,42 @@ def cadastrar_aluno():
     ---
     tags:
       - Alunos
-    parameters:
-        - in: body
-          name: aluno
+    requestBody:
+      required: true
+      content:
+        application/json:
           schema:
-              type: object
-              required:
-                  - aluno_id
-                  - nome_completo
-                  - data_nascimento
-                  - id_turma
-                  - nome_responsavel
-                  - telefone_responsavel
-                  - email_responsavel
-              properties:
-                  aluno_id:
-                      type: string
-                      description: Identificador único do aluno
-                  nome_completo:
-                      type: string
-                      description: Nome completo do aluno
-                  data_nascimento:
-                      type: string
-                      format: date
-                      description: Data de nascimento do aluno (YYYY-MM-DD)
-                  id_turma:
-                      type: integer
-                      description: ID da turma do aluno
-                  nome_responsavel:
-                      type: string
-                      description: Nome do responsável
-                  telefone_responsavel:
-                      type: string
-                      description: Telefone do responsável
-                  email_responsavel:
-                      type: string
-                      description: E-mail do responsável
-                  informacoes_adicionais:
-                      type: string
-                      description: Informações adicionais sobre o aluno (opcional)
+            type: object
+            required:
+              - nome_completo
+              - data_nascimento
+              - id_turma
+              - nome_responsavel
+              - telefone_responsavel
+              - email_responsavel
+            properties:
+              nome_completo:
+                type: string
+                description: Nome completo do aluno
+              data_nascimento:
+                type: string
+                format: date
+                description: Data de nascimento do aluno (YYYY-MM-DD)
+              id_turma:
+                type: integer
+                description: ID da turma do aluno
+              nome_responsavel:
+                type: string
+                description: Nome do responsável
+              telefone_responsavel:
+                type: string
+                description: Telefone do responsável
+              email_responsavel:
+                type: string
+                description: E-mail do responsável
+              informacoes_adicionais:
+                type: string
+                description: Informações adicionais sobre o aluno (opcional)
     responses:
         201:
             description: Aluno cadastrado com sucesso
@@ -236,13 +277,12 @@ def cadastrar_aluno():
         cursor.execute(
             """
             INSERT INTO aluno (
-                aluno_id, nome_completo, data_nascimento, id_turma,
+                nome_completo, data_nascimento, id_turma,
                 nome_responsavel, telefone_responsavel, email_responsavel, informacoes_adicionais
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
-                data['aluno_id'],
                 data['nome_completo'],
                 data['data_nascimento'],
                 data['id_turma'],
